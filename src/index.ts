@@ -1,6 +1,8 @@
+import 'module-alias/register';
+
 import HTTPProxy from './httpServer';
-import AppConfig from './config';
-import HTTPSProxy from './httpsServer';
+import AppConfig from './appConfig';
+import HTTPSProxy from './httpsProxy';
 
 
 const config = new AppConfig();

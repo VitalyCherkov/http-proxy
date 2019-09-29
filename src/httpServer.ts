@@ -2,7 +2,7 @@ import http from 'http';
 import net from 'net';
 
 // eslint-disable-next-line no-unused-vars
-import AppConfig, { LISTENING_HOST } from './config';
+import AppConfig, { LISTENING_HOST } from './appConfig';
 import { getResponseHandler, handleError } from './utils';
 
 

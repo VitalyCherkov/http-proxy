@@ -2,7 +2,7 @@
 import * as http from 'http';
 import urlParse from 'url-parse';
 import request from 'request';
-import { defaultPorts, statusCodes } from './config';
+import { defaultPorts, statusCodes } from './appConfig';
 
 export const handleError = (prefix: string) => (err: Error) => console.log(prefix, 'err', err);
 

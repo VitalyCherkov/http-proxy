@@ -1,29 +1,14 @@
 import tls from 'tls';
-import fs from 'fs';
-import path from 'path';
 import https from 'https';
 
 // eslint-disable-next-line no-unused-vars
-import AppConfig from './config';
-import { getResponseHandler, handleError } from './utils';
+import AppConfig from '../appConfig';
+import { getResponseHandler, handleError } from '../utils';
+import generateSecureOptions from './utils/generateSecureOptions';
 
 
 type SetContextCB = (_: null, ctx: tls.SecureContext) => any;
 
-const localhostCrt = fs.readFileSync(path.resolve(__dirname, '..', 'localhost.crt'));
-const localhostKey = fs.readFileSync(path.resolve(__dirname, '..', 'localhost.key'));
-
-
-const SNICallback = (serverName: string, cb: SetContextCB) => {
-  // eslint-disable-next-line no-console
-  console.log('servername', serverName);
-
-  const context = tls.createSecureContext({
-    cert: localhostCrt,
-    key: localhostKey,
-  });
-  cb(null, context);
-};
 
 export default class HTTPSProxy {
   private config: AppConfig;
@@ -33,7 +18,9 @@ export default class HTTPSProxy {
   constructor(config: AppConfig) {
     this.config = config;
     this.server = https.createServer(
-      { SNICallback },
+      {
+        SNICallback: this.SNICallback,
+      },
       getResponseHandler(true),
     );
   }
@@ -50,5 +37,15 @@ export default class HTTPSProxy {
     });
 
     return this;
-  }
+  };
+
+  private SNICallback = (serverName: string, cb: SetContextCB) => {
+    // eslint-disable-next-line no-console
+    console.log('servername', serverName);
+
+    const secureOptions = generateSecureOptions(this.config, serverName);
+    const context = tls.createSecureContext(secureOptions);
+
+    cb(null, context);
+  };
 }
