@@ -20,23 +20,25 @@ const destPorts = {
 };
 
 const getResponseHandler = (secure: boolean) => (req, resp) => {
-  const parsedUrl = urlParse(req.url!);
-  console.log('response handler; secure =', secure, parsedUrl);
-  const proto = secure ? 'https' : 'http';
-  const url = `${proto}://${req.headers.host}${req.url}`;
+  let parsedUrl = req.url;
+  if (!parsedUrl.startsWith('http://') && !parsedUrl.startsWith('https://')) {
+    const proto = secure ? 'https' : 'http';
+    parsedUrl = `${proto}://${req.headers.host}${req.url}`;
+  }
 
+  console.log(parsedUrl);
   const defaultPort = secure ? destPorts.HTTPS : destPorts.HTTP;
 
   const options = {
-    url,
-    port: +parsedUrl.port || defaultPort,
+    url: parsedUrl,
+    port: defaultPort,
   };
 
   req
     .pipe(request(options))
-    .on('error', () => {
+    .on('error', (err) => {
+      console.log('error 1', err);
       resp.writeHead(NOT_FOUND);
-      resp.end();
     })
     .pipe(resp);
 };
@@ -50,9 +52,13 @@ httpServer.on('connect', (req, cltSocket, head) => {
       + 'Proxy-agent: Node.js-Proxy\r\n'
       + '\r\n');
     srvSocket.write(head);
-    srvSocket.pipe(cltSocket)
+    srvSocket
       .on('error', (err) => {
-        console.log('error', err);
+        console.log('error 2', err);
+      })
+      .pipe(cltSocket)
+      .on('error', (err) => {
+        console.log('error 3', err);
       })
       .pipe(srvSocket);
   });
