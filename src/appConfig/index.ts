@@ -20,5 +20,6 @@ export default class AppConfig {
 
   https: number = defaultPorts.HTTPS_LISTEN;
 
-  certsLocation: string = path.resolve(__dirname, '../..', 'certs')
+  certsLocation: string = path.resolve(__dirname, '../..', 'certs/sites');
+  rootLocation: string = path.resolve(__dirname, '../..', 'certs')
 }

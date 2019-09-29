@@ -13,11 +13,13 @@
   "license": "ISC",
   "dependencies": {
     "@types/request": "^2.48.3",
+    "@types/shelljs": "^0.8.5",
     "@types/url-parse": "^1.4.3",
     "from": "^0.1.7",
     "import": "0.0.6",
     "module-alias": "^2.2.1",
     "request": "^2.88.0",
+    "shelljs": "^0.8.3",
     "ts-node-dev": "^1.0.0-pre.43",
     "typescript": "^3.6.3",
     "url-parse": "^1.4.7"

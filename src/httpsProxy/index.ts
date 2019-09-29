@@ -2,7 +2,7 @@ import tls from 'tls';
 import https from 'https';
 
 // eslint-disable-next-line no-unused-vars
-import AppConfig from '../appConfig';
+import AppConfig from 'appConfig';
 import { getResponseHandler, handleError } from '../utils';
 import generateSecureOptions from './utils/generateSecureOptions';
 
@@ -11,7 +11,7 @@ type SetContextCB = (_: null, ctx: tls.SecureContext) => any;
 
 
 export default class HTTPSProxy {
-  private config: AppConfig;
+  private readonly config: AppConfig;
 
   private server: https.Server;
 
