@@ -17,12 +17,19 @@ export const createUrl = (secure: boolean, req: http.IncomingMessage) => {
   return parsedUrl;
 };
 
-export const getResponseHandler = (secure: boolean) => (
+export type HTTPHandler = (
   req: http.IncomingMessage,
   res: http.ServerResponse,
-) => {
+) => void;
+
+export const getResponseHandler = (
+  secure: boolean,
+  saver: (isSecure: boolean, req: http.IncomingMessage) => void,
+): HTTPHandler => (req, res) => {
   const parsedUrl = createUrl(secure, req);
   console.log(parsedUrl);
+
+  saver(secure, req);
 
   const { port } = urlParse(req.url!);
 

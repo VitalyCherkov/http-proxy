@@ -3,17 +3,21 @@ import net from 'net';
 
 // eslint-disable-next-line no-unused-vars
 import AppConfig, { LISTENING_HOST } from './appConfig';
-import { getResponseHandler, handleError } from './utils';
+// eslint-disable-next-line no-unused-vars
+import { handleError, HTTPHandler } from './utils';
 
 
 export default class HTTPProxy {
   private config: AppConfig;
 
+  private handler: HTTPHandler;
+
   private server: http.Server;
 
-  constructor(config: AppConfig) {
+  constructor(config: AppConfig, handler: HTTPHandler) {
     this.config = config;
-    this.server = http.createServer(getResponseHandler(false));
+    this.handler = handler;
+    this.server = http.createServer(handler);
   }
 
   init = () => {

@@ -3,7 +3,8 @@ import https from 'https';
 
 // eslint-disable-next-line no-unused-vars
 import AppConfig from 'appConfig';
-import { getResponseHandler, handleError } from '../utils';
+// eslint-disable-next-line no-unused-vars
+import { handleError, HTTPHandler } from '../utils';
 import generateSecureOptions from './utils/generateSecureOptions';
 
 
@@ -15,13 +16,16 @@ export default class HTTPSProxy {
 
   private server: https.Server;
 
-  constructor(config: AppConfig) {
+  private readonly handler: HTTPHandler;
+
+  constructor(config: AppConfig, handler: HTTPHandler) {
     this.config = config;
+    this.handler = handler;
     this.server = https.createServer(
       {
         SNICallback: this.SNICallback,
       },
-      getResponseHandler(true),
+      this.handler,
     );
   }
 

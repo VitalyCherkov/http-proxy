@@ -3,11 +3,28 @@ import 'module-alias/register';
 import HTTPProxy from './httpServer';
 import AppConfig from './appConfig';
 import HTTPSProxy from './httpsProxy';
+import createSaver from './saver';
+import initDb from './db';
+import { getResponseHandler } from './utils';
 
 
 const config = new AppConfig();
-const httpProxy = new HTTPProxy(config);
-const httpsProxy = new HTTPSProxy(config);
 
-httpProxy.init();
-httpsProxy.init();
+initDb(config).then((conn) => {
+  if (conn) {
+    const saver = createSaver(conn.save);
+
+    const httpProxy = new HTTPProxy(
+      config,
+      getResponseHandler(false, saver),
+    );
+
+    const httpsProxy = new HTTPSProxy(
+      config,
+      getResponseHandler(true, saver),
+    );
+
+    httpProxy.init();
+    httpsProxy.init();
+  }
+});

@@ -1,24 +1,90 @@
 import mongoose from 'mongoose';
 
 import AppConfig from 'appConfig';
+import { LogGetter, LogSaver } from 'db/types';
 
 
-class DB {
-  connection: mongoose.Connection | null = null;
+const DEFAULT_LIMIT = 20;
 
-  init = (config: AppConfig) => {
-    const {
-      mongoDBName,
-      mongoHost,
-      mongoPort,
-    } = config;
+const getConnectionLink = (config: AppConfig) => {
+  const {
+    mongoDBName,
+    mongoHost,
+    mongoPort,
+  } = config;
 
-    const connectionLink = `mongodb://${mongoHost}:${mongoPort}/${mongoDBName}`;
+  return `mongodb://${mongoHost}:${mongoPort}/${mongoDBName}`;
+};
 
-    this.connection = mongoose.connect(connectionLink, {
+const createSchema = () => new mongoose.Schema({
+  host: String,
+  protocol: String,
+  date: Date,
+  rawData: String,
+  method: String,
+});
+
+export default async (config: AppConfig) => {
+  const connectionLink = getConnectionLink(config);
+
+  try {
+    await mongoose.connect(connectionLink, {
       useNewUrlParser: true,
+      useCreateIndex: true,
+      useUnifiedTopology: true,
     });
-  };
-}
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log('Mongo conn err', e);
+    return null;
+  }
 
-export default new DB();
+  const requestSchema = createSchema();
+
+  const Model = mongoose.model('Request', requestSchema);
+
+  const save: LogSaver = (log) => new Promise((res) => {
+    const item = new Model(log);
+    item.save((err) => {
+      if (err) {
+        // eslint-disable-next-line no-console
+        console.log('Mongo save err', err);
+      }
+      res(!!err);
+    });
+  });
+
+  const get: LogGetter = async (req) => {
+    let limit: number = req.limit || 0;
+    limit = limit ? DEFAULT_LIMIT : Math.min(limit, DEFAULT_LIMIT);
+
+    const findParams: any = {
+      protocol: req.protocol,
+      status: req.status,
+      method: req.method,
+    };
+
+    if (req.host) {
+      findParams.host = {
+        $regexp: new RegExp(req.host, 'i'),
+      };
+    }
+
+    if (req.since) {
+      findParams.date = {
+        $lt: req.since,
+      };
+    }
+
+    // eslint-disable-next-line no-return-await
+    return Model
+      .find(findParams)
+      .sort({ date: -1 })
+      .limit(limit);
+  };
+
+  return {
+    save,
+    get,
+  };
+};
