@@ -3,11 +3,14 @@ import mongoose from 'mongoose';
 // eslint-disable-next-line no-unused-vars
 import AppConfig from 'appConfig';
 // eslint-disable-next-line no-unused-vars
-import { LogGetter, LogSaver } from 'db/types';
 import { handleError } from 'utils';
 
+import getMethod from './methods/get';
+import saveMethod from './methods/save';
+import findByIdMethod from './methods/findById';
+// eslint-disable-next-line no-unused-vars
+import { LogModelMethods } from './types';
 
-const DEFAULT_LIMIT = 20;
 
 const getConnectionLink = (config: AppConfig) => {
   const {
@@ -27,7 +30,7 @@ const createSchema = () => new mongoose.Schema({
   method: String,
 });
 
-export default async (config: AppConfig) => {
+export default async (config: AppConfig): Promise<null | LogModelMethods> => {
   const connectionLink = getConnectionLink(config);
 
   try {
@@ -45,46 +48,9 @@ export default async (config: AppConfig) => {
 
   const Request = mongoose.model('Request', requestSchema);
 
-  const save: LogSaver = (log) => new Promise((res) => {
-    const item = new Request(log);
-    item.save((err) => {
-      if (err) {
-        handleError('Mongo save')(err);
-      }
-      res(!!err);
-    });
-  });
-
-  const get: LogGetter = async (req) => {
-    let limit: number = req.limit || 0;
-    limit = !limit ? DEFAULT_LIMIT : Math.min(limit, DEFAULT_LIMIT);
-
-    const findParams: any = {};
-
-    if (req.protocol) {
-      findParams.protocol = req.protocol;
-    }
-
-    if (req.method) {
-      findParams.method = req.method;
-    }
-
-    if (req.host) {
-      findParams.host = new RegExp(req.host, 'i');
-    }
-
-    let query = Request.find(findParams);
-
-    if (req.since) {a
-      query = query.where('date').lt(new Date(req.since));
-    }
-
-    // eslint-disable-next-line no-return-await
-    return await query.sort('-date').limit(limit).exec() as any;
-  };
-
   return {
-    save,
-    get,
+    findById: findByIdMethod(Request),
+    save: saveMethod(Request),
+    get: getMethod(Request),
   };
 };

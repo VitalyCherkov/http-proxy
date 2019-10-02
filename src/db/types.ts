@@ -18,5 +18,12 @@ export interface ILogItem {
 
 export type IsOk = Promise<boolean>;
 
+export type FinderById = (id: string) => Promise<ILogItem>;
 export type LogGetter = (req: IRequest) => Promise<Array<ILogItem>>;
 export type LogSaver = (log: ILogItem) => IsOk;
+
+export interface LogModelMethods {
+  findById: FinderById;
+  get: LogGetter;
+  save: LogSaver;
+}

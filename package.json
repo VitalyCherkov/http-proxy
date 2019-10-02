@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/koa": "^2.0.50",
+    "@types/koa-bodyparser": "^4.3.0",
     "@types/koa-router": "^7.0.42",
     "@types/mongoose": "^5.5.18",
     "@types/request": "^2.48.3",
@@ -21,6 +22,7 @@
     "from": "^0.1.7",
     "import": "0.0.6",
     "koa": "^2.8.2",
+    "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",
     "module-alias": "^2.2.1",
     "mongoose": "^5.7.1",

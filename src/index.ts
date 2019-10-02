@@ -4,14 +4,18 @@ import HTTPProxy from './httpServer';
 import AppConfig from './appConfig';
 import HTTPSProxy from './httpsProxy';
 import createSaver from './saver';
+
 import initDb from './db';
+// eslint-disable-next-line no-unused-vars
+import { LogModelMethods } from './db/types';
+
 import api from './api';
 import { getResponseHandler } from './utils';
 
 
 const config = new AppConfig();
 
-initDb(config).then((conn) => {
+initDb(config).then((conn: LogModelMethods | null) => {
   if (!conn) {
     return;
   }
@@ -31,5 +35,5 @@ initDb(config).then((conn) => {
   httpProxy.init();
   httpsProxy.init();
 
-  api(config, conn.get);
+  api(config, conn);
 });
