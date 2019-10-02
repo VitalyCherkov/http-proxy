@@ -1,7 +1,10 @@
 import mongoose from 'mongoose';
 
+// eslint-disable-next-line no-unused-vars
 import AppConfig from 'appConfig';
+// eslint-disable-next-line no-unused-vars
 import { LogGetter, LogSaver } from 'db/types';
+import { handleError } from 'utils';
 
 
 const DEFAULT_LIMIT = 20;
@@ -34,21 +37,19 @@ export default async (config: AppConfig) => {
       useUnifiedTopology: true,
     });
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log('Mongo conn err', e);
+    handleError('Mongo conn')(e);
     return null;
   }
 
   const requestSchema = createSchema();
 
-  const Model = mongoose.model('Request', requestSchema);
+  const Request = mongoose.model('Request', requestSchema);
 
   const save: LogSaver = (log) => new Promise((res) => {
-    const item = new Model(log);
+    const item = new Request(log);
     item.save((err) => {
       if (err) {
-        // eslint-disable-next-line no-console
-        console.log('Mongo save err', err);
+        handleError('Mongo save')(err);
       }
       res(!!err);
     });
@@ -56,31 +57,30 @@ export default async (config: AppConfig) => {
 
   const get: LogGetter = async (req) => {
     let limit: number = req.limit || 0;
-    limit = limit ? DEFAULT_LIMIT : Math.min(limit, DEFAULT_LIMIT);
+    limit = !limit ? DEFAULT_LIMIT : Math.min(limit, DEFAULT_LIMIT);
 
-    const findParams: any = {
-      protocol: req.protocol,
-      status: req.status,
-      method: req.method,
-    };
+    const findParams: any = {};
 
-    if (req.host) {
-      findParams.host = {
-        $regexp: new RegExp(req.host, 'i'),
-      };
+    if (req.protocol) {
+      findParams.protocol = req.protocol;
     }
 
-    if (req.since) {
-      findParams.date = {
-        $lt: req.since,
-      };
+    if (req.method) {
+      findParams.method = req.method;
+    }
+
+    if (req.host) {
+      findParams.host = new RegExp(req.host, 'i');
+    }
+
+    let query = Request.find(findParams);
+
+    if (req.since) {a
+      query = query.where('date').lt(new Date(req.since));
     }
 
     // eslint-disable-next-line no-return-await
-    return Model
-      .find(findParams)
-      .sort({ date: -1 })
-      .limit(limit);
+    return await query.sort('-date').limit(limit).exec() as any;
   };
 
   return {

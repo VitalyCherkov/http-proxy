@@ -29,7 +29,6 @@ const getCommand = ({
 
 const generate = (config: AppConfig, serverName: string) => {
   // TODO: placeholders to command
-  console.log('certs locations', config.certsLocation, serverName);
   const command = getCommand({
     country: 'RU',
     city: 'Moscow',
@@ -46,8 +45,6 @@ const generate = (config: AppConfig, serverName: string) => {
 export default (config: AppConfig, serverName: string): SecureOptions => {
   const certPath = path.resolve(config.certsLocation, `${serverName}.crt`);
   const keyPath = path.resolve(config.certsLocation, `${serverName}.key`);
-
-  console.log(config.certsLocation, certPath, keyPath);
 
   if (!fs.existsSync(certPath) || !fs.existsSync(keyPath)) {
     generate(config, serverName);

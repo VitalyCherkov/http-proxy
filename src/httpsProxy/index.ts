@@ -4,7 +4,7 @@ import https from 'https';
 // eslint-disable-next-line no-unused-vars
 import AppConfig from 'appConfig';
 // eslint-disable-next-line no-unused-vars
-import { handleError, HTTPHandler } from '../utils';
+import { handleError, HTTPHandler } from 'utils';
 import generateSecureOptions from './utils/generateSecureOptions';
 
 
@@ -44,9 +44,6 @@ export default class HTTPSProxy {
   };
 
   private SNICallback = (serverName: string, cb: SetContextCB) => {
-    // eslint-disable-next-line no-console
-    console.log('servername', serverName);
-
     const secureOptions = generateSecureOptions(this.config, serverName);
     const context = tls.createSecureContext(secureOptions);
 

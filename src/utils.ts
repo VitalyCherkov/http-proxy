@@ -27,7 +27,6 @@ export const getResponseHandler = (
   saver: (isSecure: boolean, req: http.IncomingMessage) => void,
 ): HTTPHandler => (req, res) => {
   const parsedUrl = createUrl(secure, req);
-  console.log(parsedUrl);
 
   saver(secure, req);
 

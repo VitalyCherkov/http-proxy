@@ -15,6 +15,9 @@ const DEFAULT_MONGO_PORT = 27017;
 const DEFAULT_MONGO_HOST = 'localhost';
 const DEFAULT_MONGO_DB_NAME = 'http_proxy';
 
+const DEFAULT_API_PORT = 9090;
+const DEFAULT_API_PREFIX = '/api';
+
 export const statusCodes = {
   NOT_FOUND: 404,
 };
@@ -35,4 +38,8 @@ export default class AppConfig {
   mongoHost: string = DEFAULT_MONGO_HOST;
 
   mongoDBName: string = DEFAULT_MONGO_DB_NAME;
+
+  apiPort: number = DEFAULT_API_PORT;
+
+  apiPrefix: string = DEFAULT_API_PREFIX;
 }
