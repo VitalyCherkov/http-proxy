@@ -1,12 +1,12 @@
 // eslint-disable-next-line no-unused-vars
-import { LogGetter } from 'db/types';
+import { IStorageGetter } from 'db/types';
 // eslint-disable-next-line no-unused-vars
 import * as mongoose from 'mongoose';
 
 
 const DEFAULT_LIMIT = 20;
 
-export default (model: mongoose.Model<any, any>): LogGetter => async (req) => {
+export default (model: mongoose.Model<any, any>): IStorageGetter => async (req) => {
   let limit: number = req.limit || 0;
   limit = !limit ? DEFAULT_LIMIT : Math.min(limit, DEFAULT_LIMIT);
 
@@ -20,8 +20,8 @@ export default (model: mongoose.Model<any, any>): LogGetter => async (req) => {
     findParams.method = req.method;
   }
 
-  if (req.host) {
-    findParams.host = new RegExp(req.host, 'i');
+  if (req.uri) {
+    findParams.host = new RegExp(req.uri, 'i');
   }
 
   let query = model.find(findParams);

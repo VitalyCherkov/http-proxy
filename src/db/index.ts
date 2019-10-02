@@ -23,7 +23,7 @@ const getConnectionLink = (config: AppConfig) => {
 };
 
 const createSchema = () => new mongoose.Schema({
-  host: String,
+  uri: String,
   protocol: String,
   date: Date,
   rawData: String,

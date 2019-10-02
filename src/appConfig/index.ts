@@ -20,6 +20,7 @@ const DEFAULT_API_PREFIX = '/api';
 
 export const statusCodes = {
   NOT_FOUND: 404,
+  OK: 200,
 };
 
 export default class AppConfig {

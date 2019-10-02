@@ -19,7 +19,9 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
-    "import/prefer-default-export": "off"
+    "import/prefer-default-export": "off",
+    "implicit-arrow-linebreak": "off",
+    "no-return-await": "off"
   },
   settings: {
     "import/resolver": {

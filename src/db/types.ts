@@ -1,6 +1,6 @@
 // Интерфейс запроса за логами
-export interface IRequest {
-  host?: string;
+export interface IStorageGetReq {
+  uri?: string;
   method?: string;
   protocol?: string;
   since?: Date;
@@ -8,22 +8,22 @@ export interface IRequest {
 }
 
 // Интерфейс элемента сохраненного запроса
-export interface ILogItem {
-  host: string;
+export interface IStorageItem {
+  uri: string;
   method: string;
   protocol: string;
-  date: Date;
   rawData: string;
+  date: Date;
 }
 
 export type IsOk = Promise<boolean>;
 
-export type FinderById = (id: string) => Promise<ILogItem>;
-export type LogGetter = (req: IRequest) => Promise<Array<ILogItem>>;
-export type LogSaver = (log: ILogItem) => IsOk;
+export type IStorageFinderById = (id: string) => Promise<IStorageItem>;
+export type IStorageGetter = (req: IStorageGetReq) => Promise<Array<IStorageItem>>;
+export type IStorageSaver = (log: IStorageItem) => IsOk;
 
 export interface LogModelMethods {
-  findById: FinderById;
-  get: LogGetter;
-  save: LogSaver;
+  findById: IStorageFinderById;
+  get: IStorageGetter;
+  save: IStorageSaver;
 }

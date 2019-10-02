@@ -2,17 +2,33 @@
 import * as http from 'http';
 
 // eslint-disable-next-line no-unused-vars
-import { ILogItem, LogSaver } from 'db/types';
+import { IStorageItem, IStorageSaver } from 'db/types';
+import { serializeRequest } from '../utils';
 
 
-export default (saveToDb: LogSaver) => async (isSecure: boolean, req: http.IncomingMessage) => {
-  const log: ILogItem = {
-    date: new Date(),
-    host: req.headers.host || '',
-    method: req.method || '',
-    protocol: isSecure ? 'https' : 'http',
-    rawData: req.rawHeaders.join('\n'),
+interface ISaverArgs {
+  isSecure: boolean;
+  req: http.IncomingMessage;
+  uri: string;
+  body: string;
+}
+
+export type ILogSaver = (args: ISaverArgs) => Promise<void>;
+
+export default (saveToDb: IStorageSaver): ILogSaver =>
+  async ({
+    isSecure,
+    req,
+    uri,
+    body,
+  }) => {
+    const log: IStorageItem = {
+      uri,
+      date: new Date(),
+      method: req.method || '',
+      protocol: isSecure ? 'https' : 'http',
+      rawData: serializeRequest(isSecure, req, body),
+    };
+
+    await saveToDb(log);
   };
-
-  await saveToDb(log);
-};
