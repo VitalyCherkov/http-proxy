@@ -21,7 +21,7 @@ export default (model: mongoose.Model<any, any>): IStorageGetter => async (req) 
   }
 
   if (req.uri) {
-    findParams.host = new RegExp(req.uri, 'i');
+    findParams.uri = new RegExp(req.uri, 'i');
   }
 
   let query = model.find(findParams);
